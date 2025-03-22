@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b902b88f643b44d4c899a32ceb40cd65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hitVFXPrefab: {fileID: 3584204661001725410, guid: 030b68553779bbe47ab5f0fb1fb2ec75, type: 3}
   animator: {fileID: 2221783943764832323}
   damageAmount: 1
   muzzuleFlash: {fileID: 3541553142357002684}
@@ -353,9 +354,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55919ac34a26952479f3fc91f777b2fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 4
-  SprintSpeed: 6
-  RotationSpeed: 1
+  MoveSpeed: 6
+  SprintSpeed: 10
+  RotationSpeed: 3
   SpeedChangeRate: 10
   JumpHeight: 1.2
   Gravity: -15
@@ -561,6 +562,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pistol_02_Blue_Team
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9d91fae2703d43046a1c37804ae23dad, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -582,6 +587,14 @@ PrefabInstance:
     - target: {fileID: 514098179300078302, guid: efd29053ca457954f91b4875583fd1b8, type: 3}
       propertyPath: m_Name
       value: Muzzule Flash
+      objectReference: {fileID: 0}
+    - target: {fileID: 514098179300078302, guid: efd29053ca457954f91b4875583fd1b8, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1116917028560079090, guid: efd29053ca457954f91b4875583fd1b8, type: 3}
+      propertyPath: startDelay.scalar
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3475720033697157649, guid: efd29053ca457954f91b4875583fd1b8, type: 3}
       propertyPath: m_LocalPosition.x
