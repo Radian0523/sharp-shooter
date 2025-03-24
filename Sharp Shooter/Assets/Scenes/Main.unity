@@ -33378,6 +33378,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1350136739}
     - target: {fileID: 887033591296766197, guid: 4243288622d66b741bf3d5377d74a7eb, type: 3}
+      propertyPath: cinemachineCamera
+      value: 
+      objectReference: {fileID: 760112727}
+    - target: {fileID: 887033591296766197, guid: 4243288622d66b741bf3d5377d74a7eb, type: 3}
       propertyPath: cinemachineVirtualCamera
       value: 
       objectReference: {fileID: 760112727}
