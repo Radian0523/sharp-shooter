@@ -1,8 +1,6 @@
 using Cinemachine;
-using NUnit.Framework;
 using StarterAssets;
 using UnityEngine;
-using UnityEngine.XR;
 
 public class ActiveWeapon : MonoBehaviour
 {
@@ -12,7 +10,7 @@ public class ActiveWeapon : MonoBehaviour
         Firing,
     }
     [SerializeField] WeaponSO weaponSO;
-    [SerializeField] CinemachineVirtualCamera cinemachineVirtualCamera;
+    [SerializeField] CinemachineVirtualCamera cinemachineCamera;
     [SerializeField] GameObject zoomVignette;
     FirstPersonController firstPersonController;
     Animator animator;
@@ -42,7 +40,7 @@ public class ActiveWeapon : MonoBehaviour
     {
         currentWeapon = GetComponentInChildren<Weapon>();
         currentState = WeaponState.Idle;
-        defaultFOV = cinemachineVirtualCamera.m_Lens.FieldOfView;
+        defaultFOV = cinemachineCamera.m_Lens.FieldOfView;
         defaultRotationSpeed = firstPersonController.RotationSpeed;
     }
     void Update()
@@ -110,13 +108,13 @@ public class ActiveWeapon : MonoBehaviour
 
         if (isZoomingIn)
         {
-            cinemachineVirtualCamera.m_Lens.FieldOfView = weaponSO.ZoomAmount;
+            cinemachineCamera.m_Lens.FieldOfView = weaponSO.ZoomAmount;
             zoomVignette.SetActive(true);
             firstPersonController.ChangeRotationSpeed(weaponSO.ZoomRotationSpeed);
         }
         else
         {
-            cinemachineVirtualCamera.m_Lens.FieldOfView = defaultFOV;
+            cinemachineCamera.m_Lens.FieldOfView = defaultFOV;
             zoomVignette.SetActive(false);
             firstPersonController.ChangeRotationSpeed(defaultRotationSpeed);
 
