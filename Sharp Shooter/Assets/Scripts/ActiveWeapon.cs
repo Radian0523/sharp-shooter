@@ -1,5 +1,6 @@
 using Cinemachine;
 using StarterAssets;
+using TMPro;
 using UnityEngine;
 
 public class ActiveWeapon : MonoBehaviour
@@ -9,9 +10,13 @@ public class ActiveWeapon : MonoBehaviour
         Idle,
         Firing,
     }
-    [SerializeField] WeaponSO weaponSO;
+    [SerializeField] WeaponSO startingWeapon;
     [SerializeField] CinemachineVirtualCamera cinemachineCamera;
+    [SerializeField] Camera overlayWeaponCamera;
     [SerializeField] GameObject zoomVignette;
+    [SerializeField] TMP_Text ammoText;
+
+    WeaponSO currentWeaponSO;
     FirstPersonController firstPersonController;
     Animator animator;
     StarterAssetsInputs starterAssetsInputs;
@@ -23,6 +28,7 @@ public class ActiveWeapon : MonoBehaviour
     bool isZoomingIn = false;
     float defaultFOV;
     float defaultRotationSpeed;
+    int currentAmmo;
 
     const string SHOOT_STRING = "Shoot";
 
@@ -32,16 +38,16 @@ public class ActiveWeapon : MonoBehaviour
     {
         // 親の中から、StarterAssetsInputsをコンポーネントに持つオブジェクトを一つ取ってきて入れる
         starterAssetsInputs = GetComponentInParent<StarterAssetsInputs>();
-        animator = GetComponent<Animator>();
         firstPersonController = GetComponentInParent<FirstPersonController>();
+        animator = GetComponent<Animator>();
+        defaultFOV = cinemachineCamera.m_Lens.FieldOfView;
+        currentState = WeaponState.Idle;
+        defaultRotationSpeed = firstPersonController.RotationSpeed;
     }
 
     void Start()
     {
-        currentWeapon = GetComponentInChildren<Weapon>();
-        currentState = WeaponState.Idle;
-        defaultFOV = cinemachineCamera.m_Lens.FieldOfView;
-        defaultRotationSpeed = firstPersonController.RotationSpeed;
+        SwitchWeapon(startingWeapon);
     }
     void Update()
     {
@@ -49,23 +55,30 @@ public class ActiveWeapon : MonoBehaviour
         HandleZoom();
     }
 
+    public void AdjustAmmo(int amount)
+    {
+        currentAmmo = Mathf.Min(currentAmmo + amount, currentWeaponSO.MagazineSize);
+        ammoText.text = currentAmmo.ToString("D2");
+    }
+
     void HandleShoot()
     {
         switch (currentState)
         {
             case WeaponState.Idle:
-                if (!starterAssetsInputs.shoot) return;
-                currentWeapon.Shoot(weaponSO);
+                if (!starterAssetsInputs.shoot || currentAmmo <= 0) return;
+                currentWeapon.Shoot(currentWeaponSO);
+                AdjustAmmo(-1);
                 animator.Play(SHOOT_STRING, 0, 0f);
                 currentState = WeaponState.Firing;
                 break;
             case WeaponState.Firing:
                 timeSinceLastShot += Time.deltaTime;
-                if (timeSinceLastShot >= weaponSO.FireRate)
+                if (timeSinceLastShot >= currentWeaponSO.FireRate)
                 {
                     timeSinceLastShot = 0;
                     currentState = WeaponState.Idle;
-                    if (weaponSO.IsAutomatic) break;
+                    if (currentWeaponSO.IsAutomatic) break;
                     starterAssetsInputs.ShootInput(false);
                 }
                 break;
@@ -82,44 +95,47 @@ public class ActiveWeapon : MonoBehaviour
 
         Weapon newWeapon = Instantiate(weaponSO.weaponPrefab, this.gameObject.transform).GetComponent<Weapon>();
         currentWeapon = newWeapon;
-        this.weaponSO = weaponSO; // 地味に勉強になるコード(weaponSOだと二種類の捉え方があってしまうが、thisを書けば特定可能になる)
-        starterAssetsInputs.ZoomInput(false);
+        this.currentWeaponSO = weaponSO;
+        AdjustAmmo(currentWeaponSO.MagazineSize);
+        ZoomOut();
     }
 
     void HandleZoom()
     {
-        if (!weaponSO.CanZoom) return;
+        if (!currentWeaponSO.CanZoom) return;
 
         if (starterAssetsInputs.zoom)
         {
             if (!isZoomingIn)
             {
-                Debug.Log("Zooming in");
-                isZoomingIn = true;
-                starterAssetsInputs.ZoomInput(false);
+                ZoomIn();
             }
             else
             {
-                Debug.Log("Not zooming in");
-                isZoomingIn = false;
-                starterAssetsInputs.ZoomInput(false);
+                ZoomOut();
             }
         }
+    }
 
-        if (isZoomingIn)
-        {
-            cinemachineCamera.m_Lens.FieldOfView = weaponSO.ZoomAmount;
-            zoomVignette.SetActive(true);
-            firstPersonController.ChangeRotationSpeed(weaponSO.ZoomRotationSpeed);
-        }
-        else
-        {
-            cinemachineCamera.m_Lens.FieldOfView = defaultFOV;
-            zoomVignette.SetActive(false);
-            firstPersonController.ChangeRotationSpeed(defaultRotationSpeed);
+    private void ZoomIn()
+    {
+        Debug.Log("Zooming in");
+        isZoomingIn = true;
+        starterAssetsInputs.ZoomInput(false);
+        cinemachineCamera.m_Lens.FieldOfView = currentWeaponSO.ZoomAmount;
+        overlayWeaponCamera.fieldOfView = currentWeaponSO.ZoomAmount;
+        zoomVignette.SetActive(true);
+        firstPersonController.ChangeRotationSpeed(currentWeaponSO.ZoomRotationSpeed);
+    }
 
-        }
-
-
+    private void ZoomOut()
+    {
+        Debug.Log("Not zooming in");
+        isZoomingIn = false;
+        starterAssetsInputs.ZoomInput(false);
+        cinemachineCamera.m_Lens.FieldOfView = defaultFOV;
+        overlayWeaponCamera.fieldOfView = defaultFOV;
+        zoomVignette.SetActive(false);
+        firstPersonController.ChangeRotationSpeed(defaultRotationSpeed);
     }
 }
