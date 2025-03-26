@@ -7,10 +7,14 @@ public class Robot : MonoBehaviour
     NavMeshAgent agent;
     // [SerializeField] Transform target;
     FirstPersonController player;
+    EnemyHealth enemyHealth;
+
+    const string PLAYER_STRING = "Player";
 
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        enemyHealth = GetComponent<EnemyHealth>();
     }
     void Start()
     {
@@ -21,6 +25,15 @@ public class Robot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!player) return;
         agent.SetDestination(player.transform.position);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag(PLAYER_STRING))
+        {
+            enemyHealth.SelfDestruct();
+        }
     }
 }
