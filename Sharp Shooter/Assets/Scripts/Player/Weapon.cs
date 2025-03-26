@@ -23,7 +23,8 @@ public class Weapon : MonoBehaviour
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, Mathf.Infinity, interactionLayers, QueryTriggerInteraction.Ignore))
         {
             Instantiate(weaponSO.HitVFXPrefab, hit.point, Quaternion.identity);
-            EnemyHealth enemyHealth = hit.collider.GetComponent<EnemyHealth>();
+            // GetComponentInParentは、自分自身、親の順番に走査する。TurretのColliderを、Modelの中に付けているためInParentにしている
+            EnemyHealth enemyHealth = hit.collider.GetComponentInParent<EnemyHealth>();
 
             //同じ意味。null構文
             enemyHealth?.TakeDamage(weaponSO.Damage);
