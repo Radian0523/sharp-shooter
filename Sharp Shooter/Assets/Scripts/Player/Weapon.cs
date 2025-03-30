@@ -7,10 +7,16 @@ public class Weapon : MonoBehaviour
     [SerializeField] LayerMask interactionLayers;
 
     CinemachineImpulseSource impulseSource;
+    GameManager gameManager;
 
     void Awake()
     {
         impulseSource = GetComponent<CinemachineImpulseSource>();
+    }
+
+    void Start()
+    {
+        gameManager = FindFirstObjectByType<GameManager>();
     }
 
     public void Shoot(WeaponSO weaponSO)
@@ -27,11 +33,12 @@ public class Weapon : MonoBehaviour
             EnemyHealth enemyHealth = hit.collider.GetComponentInParent<EnemyHealth>();
 
             //同じ意味。null構文
-            enemyHealth?.TakeDamage(weaponSO.Damage);
-            // if (enemyHealth)
-            // {
-            //     enemyHealth.TakeDamage(damageAmount);
-            // }
+            // enemyHealth?.TakeDamage(weaponSO.Damage);
+            if (enemyHealth)
+            {
+                enemyHealth.TakeDamage(weaponSO.Damage);
+                gameManager.StartHitStopCoroutine(weaponSO.hitStopDuration);
+            }
         }
     }
 }

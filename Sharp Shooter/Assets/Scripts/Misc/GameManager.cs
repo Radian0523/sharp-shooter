@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -26,5 +27,17 @@ public class GameManager : MonoBehaviour
     {
         Debug.LogWarning("Does not work in the Unity Editor");
         Application.Quit();
+    }
+
+    public void StartHitStopCoroutine(float duration)
+    {
+        StartCoroutine(HitStopCoroutine(duration));
+    }
+
+    IEnumerator HitStopCoroutine(float duration)
+    {
+        Time.timeScale = 0;
+        yield return new WaitForSecondsRealtime(duration);
+        Time.timeScale = 1;
     }
 }
