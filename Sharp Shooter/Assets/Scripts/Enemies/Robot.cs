@@ -36,4 +36,14 @@ public class Robot : MonoBehaviour
             enemyHealth.SelfDestruct();
         }
     }
+
+    public void OnStopChase()
+    {
+        agent.isStopped = true;
+    }
+
+    public void OnStartChase()
+    {
+        agent.isStopped = false;
+    }
 }
